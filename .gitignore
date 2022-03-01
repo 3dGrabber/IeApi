@@ -1,0 +1,4 @@
+secrets.ts
+dist/
+node_modules/
+.idea/
