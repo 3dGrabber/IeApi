@@ -15,6 +15,7 @@
         "buildAndRun": "npm run build && node ./dist/main.js"
     },
     "dependencies": {
-        "esbuild": "^0.14.23"
+        "esbuild": "^0.14.23",
+        "rxjs": "^7.5.5"
     }
 }
