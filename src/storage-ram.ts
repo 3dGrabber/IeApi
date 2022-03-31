@@ -1,12 +1,11 @@
-import { log } from "./logger";
 import { vrmDataStorage } from "./main";
 import { writeVrmDataToDisk } from "./storage-disk";
 
-export function replaceInstallations(installations:any) {
+export function replaceInstallations(installations: any) {
     for (let index = 0; index < vrmDataStorage.vrmData.length; index++) {
         const oldElem = getInstallationById(installations[index].idSite);
-        (installations[index] as any).diagnostics = oldElem && oldElem.diagnostics;
-        (installations[index] as any).tags = oldElem && oldElem.tags;
+        installations[index].diagnostics = oldElem && oldElem.diagnostics;
+        installations[index].tags = oldElem && oldElem.tags;
     }
     vrmDataStorage.vrmData = installations;
     writeVrmDataToDisk();

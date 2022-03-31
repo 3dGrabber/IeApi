@@ -16,7 +16,7 @@ export function readVrmDataFromDisk(): object {
 export function writeVrmDataToDisk(): void {
     fs.writeFile('vrmData.json', JSON.stringify(vrmDataStorage), 'utf8', function (err) {
         if (err) {
-            log('DISK: error occured writing JSON to vrmData.json');
+            log('DISK: error occurred writing JSON to vrmData.json');
             return console.log(err);
         }
         log('DISK: vrmData.json file saved');

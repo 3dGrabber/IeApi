@@ -1,16 +1,16 @@
 import {isDefined} from "./utils";
-import { log } from "./logger";
-import {IncomingMessage, ServerResponse} from "http";
+import {log} from "./logger";
 import * as http from "http";
-import { vrmDataStorage } from "./main";
-import { getInstallationById, getInstallationByName } from "./storage-ram";
+import {IncomingMessage, ServerResponse} from "http";
+import {vrmDataStorage} from "./main";
+import {getInstallationById, getInstallationByName} from "./storage-ram";
 
 const port = 8080;
 
 function serve(request: IncomingMessage, response: ServerResponse): void
 {
     const url = request.url;
-    if(url=='/favicon.ico'){
+    if (url === '/favicon.ico'){
         response.end();
         return;
     }
@@ -20,18 +20,19 @@ function serve(request: IncomingMessage, response: ServerResponse): void
     if (isDefined(url))
     {
         const parsed = new URL(url, `https://${request.headers.host}`);  // way to parse path/queryString from host header
-        const pathArr = parsed.pathname.split("/");
-        log('SERVER: Request for '+JSON.stringify(pathArr))
-        //response.write(parsed.pathname);
-        switch(pathArr[1]){
+        log('SERVER: Request for ' + parsed.pathname)
+
+        const [_, command, argument] = parsed.pathname.split("/");
+
+        switch(command){
             case 'GetAllInstallations':
                 response.write(JSON.stringify(vrmDataStorage.vrmData));
                 break;
             case 'GetInstallationByName':
-                response.write(JSON.stringify(getInstallationByName(pathArr[2])));
+                response.write(JSON.stringify(getInstallationByName(argument)));
                 break;
             case 'GetInstallationById':
-                response.write(JSON.stringify(getInstallationById(pathArr[2])));
+                response.write(JSON.stringify(getInstallationById(argument)));
                 break;
         }
     }

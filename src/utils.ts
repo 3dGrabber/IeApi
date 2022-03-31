@@ -1,4 +1,4 @@
-export const delay = (ms: number | undefined) => new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
+export const delay = (ms: number) => new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
 
 export type Maybe<T> = T | undefined;
 export type UserToken = { idUser: number, token: string }

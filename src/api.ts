@@ -1,25 +1,25 @@
 import fetch from 'node-fetch';
-import { log } from "./logger";
-import { delay, UserToken } from "./utils";
+import {log} from "./logger";
+import {delay, UserToken} from "./utils";
 import {vrmUser, vrmPassword} from "../secrets";
 
 // https://docs.victronenergy.com/vrmapi/overview.html
 const vrmApi = 'https://vrmapi.victronenergy.com/v2/'
 
-let token:UserToken;
+let token: UserToken;
 
 const retryFetch = (
-    url:any,
+    url: string,
     fetchOptions = {},
     retries = 3,
     retryDelay = 1000,
-    timeout:number
+    timeout: number
   ) => {
     return new Promise((resolve, reject) => {
       // check for timeout
       if (timeout) setTimeout(() => reject('error: timeout'), timeout);
-  
-      const wrapper = (n:any) => {
+
+        const wrapper = (n: number) => {
         fetch(url, fetchOptions)
           .then((res) => resolve(res))
           .catch(async (err) => {
@@ -31,22 +31,22 @@ const retryFetch = (
             }
           });
       };
-  
+
       wrapper(retries);
     });
   };
   
-  async function callAPI(url:string):Promise<any> {
+  async function callAPI(url:string) {
       const headers = {
-          'X-Authorization': 'Bearer '+token.token+'}'
+          'X-Authorization': 'Bearer ' + token.token + '}'
       }
-      log('API: '+url)
+      log('API: ' + url)
       let answer
       try{
           answer = retryFetch(vrmApi + url, {headers: headers, method: 'GET'}, 6, 30000, 0);
       }catch{
           answer = new Promise(function(myResolve) {
-              myResolve({success:false,records:[]});
+              myResolve({success: false, records: []});
           });
       }
       return answer
@@ -72,23 +72,23 @@ export async function vrmGetToken(): Promise<void>
 }
 
 
-export async function getAllInstallations():Promise<object[]>{
-    const response = await callAPI('users/' + token.idUser + '/installations')
-    const installationsResponse:any = await response.json()
-    log('API: got a total of '+(installationsResponse.records.length)+' installations')
+export async function getAllInstallations(): Promise<object[]>{
+    const response : any = await callAPI('users/' + token.idUser + '/installations')
+    const installationsResponse = await response.json()
+    log('API: got a total of ' + installationsResponse.records.length + ' installations')
     return installationsResponse.records
 }
 
-export async function getDiagnostics(idSite:number):Promise<object[]>{
-    const response = await callAPI('installations/' + idSite + '/diagnostics')
-    const diagnosticsResponse:any = await response.json()
+export async function getDiagnostics(idSite: number): Promise<object[]>{
+    const response: any = await callAPI('installations/' + idSite + '/diagnostics')
+    const diagnosticsResponse = await response.json()
     //log('got '+(diagnosticsResponse.records.length)+' diagnostics')
     return diagnosticsResponse.records
 }
 
-export async function getTags(idSite:number):Promise<string[]>{
-    const response = await callAPI('installations/' + idSite + '/tags')
-    const tagsResponse:any = await response.json()
+export async function getTags(idSite: number): Promise<string[]>{
+    const response:any = await callAPI('installations/' + idSite + '/tags')
+    const tagsResponse = await response.json()
     //log('got '+(tagsResponse.tags.length)+' tags')
     return tagsResponse.tags
 }

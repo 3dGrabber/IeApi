@@ -1,10 +1,11 @@
 import { readVrmDataFromDisk } from "./storage-disk";
 import { getAllDataFromVrm } from "./fetchData";
-import { log } from "./logger";
 import { startServer } from "./server";
 import { vrmGetToken } from "./api";
 
-export const vrmDataStorage:any = readVrmDataFromDisk()
+export const vrmDataStorage = readVrmDataFromDisk()
+
+const updatePeriod = 5 * 60 * 1000; // 5 minutes
 
 startServer();
 
@@ -15,5 +16,5 @@ vrmGetToken().then(async () => {
 
 async function getAllDataFromVrmContinuously(){
     await getAllDataFromVrm();
-    setTimeout(getAllDataFromVrmContinuously, 5 * 60 * 1000)
+    setTimeout(getAllDataFromVrmContinuously, updatePeriod)
 }
