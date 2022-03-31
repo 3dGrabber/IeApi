@@ -86,7 +86,7 @@ export async function getDiagnostics(idSite:number):Promise<object[]>{
     return diagnosticsResponse.records
 }
 
-export async function getTags(idSite:number):Promise<String[]>{
+export async function getTags(idSite:number):Promise<string[]>{
     const response = await callAPI('installations/' + idSite + '/tags')
     const tagsResponse:any = await response.json()
     //log('got '+(tagsResponse.tags.length)+' tags')

@@ -12,7 +12,7 @@ export function replaceInstallations(installations:any) {
     writeVrmDataToDisk();
 }
 
-export function replaceTags(id:string, tags:Array<String>) {
+export function replaceTags(id:string, tags:Array<string>) {
     const itemIndex = vrmDataStorage.vrmData.findIndex((item: { idSite: string; }) => item.idSite == id);
     vrmDataStorage.vrmData[itemIndex] && (vrmDataStorage.vrmData[itemIndex].tags = tags);
 }
