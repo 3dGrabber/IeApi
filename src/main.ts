@@ -4,7 +4,7 @@ import { log } from "./logger";
 import { startServer } from "./server";
 import { vrmGetToken } from "./api";
 
-export let vrmDataStorage:any = readVrmDataFromDisk()
+export const vrmDataStorage:any = readVrmDataFromDisk()
 
 startServer();
 

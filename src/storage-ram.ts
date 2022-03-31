@@ -13,12 +13,12 @@ export function replaceInstallations(installations:any) {
 }
 
 export function replaceTags(id:string, tags:Array<String>) {
-    let itemIndex = vrmDataStorage.vrmData.findIndex((item: { idSite: string; }) => item.idSite == id);
+    const itemIndex = vrmDataStorage.vrmData.findIndex((item: { idSite: string; }) => item.idSite == id);
     vrmDataStorage.vrmData[itemIndex] && (vrmDataStorage.vrmData[itemIndex].tags = tags);
 }
 
 export function replaceDiagnostics(id:string, diagnostics:any) {
-    let itemIndex = vrmDataStorage.vrmData.findIndex((item: { idSite: string; }) => item.idSite == id);
+    const itemIndex = vrmDataStorage.vrmData.findIndex((item: { idSite: string; }) => item.idSite == id);
     vrmDataStorage.vrmData[itemIndex] && (vrmDataStorage.vrmData[itemIndex].diagnostics = diagnostics);
 }
 

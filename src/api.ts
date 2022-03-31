@@ -37,7 +37,7 @@ const retryFetch = (
   };
   
   async function callAPI(url:string):Promise<any> {
-      let headers = {
+      const headers = {
           'X-Authorization': 'Bearer '+token.token+'}'
       }
       log('API: '+url)
@@ -74,21 +74,21 @@ export async function vrmGetToken(): Promise<void>
 
 export async function getAllInstallations():Promise<object[]>{
     const response = await callAPI('users/' + token.idUser + '/installations')
-    let installationsResponse:any = await response.json()
+    const installationsResponse:any = await response.json()
     log('API: got a total of '+(installationsResponse.records.length)+' installations')
     return installationsResponse.records
 }
 
 export async function getDiagnostics(idSite:number):Promise<object[]>{
     const response = await callAPI('installations/' + idSite + '/diagnostics')
-    let diagnosticsResponse:any = await response.json()
+    const diagnosticsResponse:any = await response.json()
     //log('got '+(diagnosticsResponse.records.length)+' diagnostics')
     return diagnosticsResponse.records
 }
 
 export async function getTags(idSite:number):Promise<String[]>{
     const response = await callAPI('installations/' + idSite + '/tags')
-    let tagsResponse:any = await response.json()
+    const tagsResponse:any = await response.json()
     //log('got '+(tagsResponse.tags.length)+' tags')
     return tagsResponse.tags
 }

@@ -20,7 +20,7 @@ function serve(request: IncomingMessage, response: ServerResponse): void
     if (isDefined(url))
     {
         const parsed = new URL(url, `https://${request.headers.host}`);  // way to parse path/queryString from host header
-        let pathArr = parsed.pathname.split("/")
+        const pathArr = parsed.pathname.split("/");
         log('SERVER: Request for '+JSON.stringify(pathArr))
         //response.write(parsed.pathname);
         switch(pathArr[1]){

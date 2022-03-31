@@ -6,7 +6,7 @@ import { delay } from "./utils";
 
 export async function getAllDataFromVrm() {
 
-    let installations = await getAllInstallations();
+    const installations = await getAllInstallations();
     replaceInstallations(installations)
     await delay(1000);
 
