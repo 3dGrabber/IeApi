@@ -2,6 +2,7 @@ import fetch from 'node-fetch';
 import {log} from "./logger";
 import {delay, UserToken} from "./utils";
 import {vrmUser, vrmPassword} from "../secrets";
+import {InstallationData, VrmResponse} from "./vrmTypes";
 
 // https://docs.victronenergy.com/vrmapi/overview.html
 const vrmApi = 'https://vrmapi.victronenergy.com/v2/'
