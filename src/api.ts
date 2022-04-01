@@ -3,18 +3,34 @@ import { log } from "./logger";
 import { delay, UserToken } from "./utils";
 import { vrmUser, vrmPassword } from "../secrets";
 import { Diagnostic, InstallationData, VrmResponse } from "./vrmTypes";
+import { async } from 'rxjs';
 
 // https://docs.victronenergy.com/vrmapi/overview.html
 const vrmApi = 'https://vrmapi.victronenergy.com/v2/'
 
 let token: UserToken;
 
+export async function vrmGetToken(): Promise<void> {
+  const credentials =
+  {
+    username: vrmUser,
+    password: vrmPassword
+  };
+  const body = JSON.stringify(credentials);
+  log('API: Logging into VRM...')
+  const response = await fetch(vrmApi + 'auth/login', { method: 'POST', body });
+  token = await response.json() as UserToken;
+}
+
+/*
+* retryFetch is a wrapper for ajax calls. it will retry on network errors etc. but not on unwanted answer
+*/
 const retryFetch = (
   url: string,
   fetchOptions = {},
-  retries = 3,
-  retryDelay = 1000,
-  timeout: number
+  retryAjaxCall = 3, //retry x times
+  retryDelay = 5000, //wait before retry request
+  timeout = 30000 //timeout request after x ms
 ) => {
   return new Promise((resolve, reject) => {
     // check for timeout
@@ -22,7 +38,9 @@ const retryFetch = (
 
     const wrapper = (n: number) => {
       fetch(url, fetchOptions)
-        .then((res) => resolve(res))
+        .then((res) => {
+          resolve(res)
+        })
         .catch(async (err) => {
           if (n > 0) {
             await delay(retryDelay);
@@ -33,62 +51,84 @@ const retryFetch = (
         });
     };
 
-    wrapper(retries);
+    wrapper(retryAjaxCall);
   });
 };
 
+/*
+* retryFetch is a wrapper for API calls. it will retry on success false
+*/
 async function callAPI(url: string) {
-  const headers = {
-    'X-Authorization': 'Bearer ' + token.token + '}'
+  let retryDelay = 2000
+  const retryCount = 3
+
+  const fetchOptions = {
+    headers: {
+      'X-Authorization': 'Bearer ' + token.token + '}'
+    },
+    method: 'GET'
   }
+
   log('API: ' + url)
-  let answer
-  try {
-    answer = retryFetch(vrmApi + url, { headers: headers, method: 'GET' }, 6, 30000, 0);
-  } catch {
-    answer = new Promise(function (myResolve) {
-      myResolve({ success: false, records: [] });
-    });
+
+  const loadData = async () => {
+    try {
+      const response: any = await retryFetch(vrmApi + url, fetchOptions)
+      const fetchedData = await response.json()
+      if (fetchedData && fetchedData.success) {
+        if (fetchedData.tags) {
+          fetchedData.records = fetchedData.tags //fix bad API design :)
+        }
+        if (fetchedData.records) {
+          return fetchedData.records
+        } else {
+          return false
+        }
+      } else {
+        return false
+      }
+    } catch {
+      return false
+    }
   }
-  return answer
+
+  const stopcallAPI = new Promise((resolve, reject) => {
+    const retryWrapper = async (n: number) => {
+      let dataHopefullyLoaded = await loadData();
+      if (dataHopefullyLoaded === false) {
+        if (n > 0) {
+          log('API: Data load unsuccesful. Retry in ' + retryDelay)
+          await delay(retryDelay);
+          retryDelay = retryDelay * 2
+          retryWrapper(--n);
+        } else {
+          resolve([])
+        }
+      } else {
+        resolve(dataHopefullyLoaded)
+      }
+    }
+
+    retryWrapper(retryCount);
+  })
+
+  return await Promise.resolve(stopcallAPI)
 }
-
-export async function vrmGetToken(): Promise<void> {
-  const credentials =
-  {
-    username: vrmUser,
-    password: vrmPassword
-  };
-
-  const body = JSON.stringify(credentials);
-
-  log('API: Logging into VRM...')
-
-  const response = await fetch(vrmApi + 'auth/login', { method: 'POST', body });
-  token = await response.json() as UserToken;
-
-  //log(`got token ${token.token}`)
-  //log(`got idUser ${token.idUser}`)
-}
-
 
 export async function getAllInstallations(): Promise<InstallationData[]> {
-  const response: any = await callAPI('users/' + token.idUser + '/installations')
-  const installationsResponse = await response.json()
-  log('API: got a total of ' + installationsResponse.records.length + ' installations')
-  return installationsResponse.records
+  const installationsResponse: any = await callAPI('users/' + token.idUser + '/installations')
+  log('API: got a total of ' + installationsResponse.length + ' installations')
+  return installationsResponse
 }
 
 export async function getDiagnostics(idSite: number): Promise<Diagnostic[]> {
-  const response: any = await callAPI('installations/' + idSite + '/diagnostics?count=1000')
-  const diagnosticsResponse = await response.json()
+  const diagnosticsResponse: any = await callAPI('installations/' + idSite + '/diagnostics?count=1000')
   //log('got '+(diagnosticsResponse.records.length)+' diagnostics')
-  return diagnosticsResponse.records
+  return diagnosticsResponse
 }
 
 export async function getTags(idSite: number): Promise<string[]> {
-  const response: any = await callAPI('installations/' + idSite + '/tags')
-  const tagsResponse = await response.json()
+  const tagsResponse: any = await callAPI('installations/' + idSite + '/tags')
   //log('got '+(tagsResponse.tags.length)+' tags')
-  return tagsResponse.tags
+  return tagsResponse
 }

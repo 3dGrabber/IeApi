@@ -22,5 +22,4 @@ export function writeVrmDataToDisk(): void {
         }
         log('DISK: vrmData.json file saved');
     });
-    return
 }
