@@ -3,7 +3,7 @@ import {log} from "./logger";
 import * as http from "http";
 import {IncomingMessage, ServerResponse} from "http";
 import {vrmDataStorage} from "./main";
-import {getInstallationById, getInstallationByName} from "./storage-ram";
+import {getInstallationById, GetInstallationByMachineSerial as getInstallationByMachineSerial, getInstallationByName} from "./storage-ram";
 
 const port = 8080;
 
@@ -33,6 +33,9 @@ function serve(request: IncomingMessage, response: ServerResponse): void
                 break;
             case 'GetInstallationById':
                 response.write(JSON.stringify(getInstallationById(argument)));
+                break;
+            case 'GetInstallationByMachineSerial':
+                response.write(JSON.stringify(getInstallationByMachineSerial(argument) || {}));
                 break;
         }
     }

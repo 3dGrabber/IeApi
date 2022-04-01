@@ -29,3 +29,15 @@ export function getInstallationById(id:string){
 export function getInstallationByName(name:string){
     return vrmDataStorage.vrmData.find((inst: any) => inst.name == name);
 }
+
+export function GetInstallationByMachineSerial(serialNumber:string){
+    return vrmDataStorage.vrmData.find((inst: any) => getSerialNumber(inst) == serialNumber);
+}
+
+function getSerialNumber(elem:any){
+    if(elem && elem.diagnostics){
+        const diagElem = elem.diagnostics.find((elem: any) => elem.description === 'Machine serial number');
+        if(diagElem && diagElem.formattedValue) return diagElem.formattedValue;
+    }
+    return '';
+}
