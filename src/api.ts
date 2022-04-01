@@ -81,7 +81,7 @@ export async function getAllInstallations(): Promise<object[]>{
 }
 
 export async function getDiagnostics(idSite: number): Promise<object[]>{
-    const response: any = await callAPI('installations/' + idSite + '/diagnostics')
+    const response: any = await callAPI('installations/' + idSite + '/diagnostics?count=1000')
     const diagnosticsResponse = await response.json()
     //log('got '+(diagnosticsResponse.records.length)+' diagnostics')
     return diagnosticsResponse.records
