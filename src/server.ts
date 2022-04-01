@@ -32,7 +32,7 @@ function serve(request: IncomingMessage, response: ServerResponse): void
                 response.write(JSON.stringify(getInstallationByName(argument)));
                 break;
             case 'GetInstallationById':
-                response.write(JSON.stringify(getInstallationById(argument)));
+                response.write(JSON.stringify(getInstallationById(parseInt(argument))));
                 break;
             case 'GetInstallationByMachineSerial':
                 response.write(JSON.stringify(getInstallationByMachineSerial(argument) || {}));

@@ -1,8 +1,9 @@
 import fs from 'fs';
 import { log } from './logger';
 import { vrmDataStorage } from './main';
+import { VRMDataStorage } from './vrmTypes';
 
-export function readVrmDataFromDisk(): object {
+export function readVrmDataFromDisk(): VRMDataStorage {
     try {
         const data = fs.readFileSync('vrmData.json', 'utf8')
         log('DISK: read file vrmData.json')
