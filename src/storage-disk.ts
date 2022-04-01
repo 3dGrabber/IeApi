@@ -10,7 +10,7 @@ export function readVrmDataFromDisk(): object {
     } catch (err) {
         console.error(err)
     }
-    return { vrmData:{} };
+    return { vrmData:Array() };
 }
 
 export function writeVrmDataToDisk(): void {
